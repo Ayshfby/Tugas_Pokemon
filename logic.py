@@ -1,6 +1,9 @@
 import aiohttp  # A library for asynchronous HTTP requests
 import random
 import asyncio
+from datetime import datetime
+from datetime import datetime, timedelta
+
 
 class Pokemon:
     pokemons = {}
@@ -12,6 +15,7 @@ class Pokemon:
         self.index = None
         self.hp = random.randint (10, 100)
         self.power = random.randint (1, 5)
+        self.last_feed_time = datetime.now
 
         if pokemon_trainer not in Pokemon.pokemons:
             Pokemon.pokemons[pokemon_trainer] = self
@@ -75,6 +79,16 @@ class Pokemon:
             enemy.hp = 0
             return f"@{self.pokemon_trainer} menang melawan @{enemy.pokemon_trainer}!"
         
+    async def feed(self, feed_interval = 5, hp_increase = 10 ):
+        current_time = datetime.now()  
+        delta_time = timedelta(hours=feed_interval)  
+        if (current_time - self.last_feed_time) > delta_time:
+            self.hp += hp_increase
+            self.last_feed_time = current_time
+            return f"Kesehatan Pokemon dipulihkan. HP saat ini: {self.hp}"
+        else:
+            return f"Kalian dapat memberi makan Pokémon kalian di: {current_time-delta_time}"
+        
 class Wizard(Pokemon):
 
     async def attack(self, enemy):
@@ -87,6 +101,15 @@ class Wizard(Pokemon):
         # A method that returns information about the pokémon
         return f"pokemon kamu adalah penyihir" + await super().info()
     
+    async def feed(self, feed_interval = 0.5, hp_increase = 10 ):
+        current_time = datetime.now()  
+        delta_time = timedelta(hours=feed_interval)  
+        if (current_time - self.last_feed_time) > delta_time:
+            self.hp += hp_increase
+            self.last_feed_time = current_time
+            return f"Kesehatan Pokemon dipulihkan. HP saat ini: {self.hp}"
+        else:
+            return f"Kalian dapat memberi makan Pokémon kalian di: {current_time-delta_time}"
 
 class Fighter(Pokemon):
 
@@ -100,6 +123,16 @@ class Fighter(Pokemon):
     async def info(self):
         # A method that returns information about the pokémon
         return f"pokemon kamu adalah petarung" + await super().info()
+    
+    async def feed(self, feed_interval = 5, hp_increase = 20 ):
+        current_time = datetime.now()  
+        delta_time = timedelta(hours=feed_interval)  
+        if (current_time - self.last_feed_time) > delta_time:
+            self.hp += hp_increase
+            self.last_feed_time = current_time
+            return f"Kesehatan Pokemon dipulihkan. HP saat ini: {self.hp}"
+        else:
+            return f"Kalian dapat memberi makan Pokémon kalian di: {current_time-delta_time}"
     
 async def main ():
     wizard = Wizard("username1")
